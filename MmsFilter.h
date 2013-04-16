@@ -50,25 +50,73 @@ namespace ppbox
             }
 
         private:
+            bool next_payload(
+                boost::system::error_code & ec);
+
             void parse_for_time(
                 ppbox::demux::Sample & sample,
                 boost::system::error_code & ec);
 
         private:
-            util::protocol::MmspDataHeader header_;
-            std::vector<ppbox::demux::AsfStream> streams_;
-            std::vector<size_t> stream_map_; // Map index to AsfStream
-            ppbox::demux::AsfParse parse_;
-            ppbox::avformat::ASF_Packet packet_;
-            ppbox::avformat::ASF_PayloadHeader payload_;
-            ppbox::avformat::ASF_ParseContext context_;
-            bool is_save_sample_;
-            ppbox::demux::Sample sample_;
-            ppbox::demux::Sample sample2_;
+            typedef std::pair<
+                size_t, 
+                ppbox::data::MemoryLock *
+            > packet_memory;
+
             typedef util::buffers::CycleBuffers<
                 std::deque<boost::asio::const_buffer>, boost::uint8_t
             > cycle_buffer_t ;
+
+            struct PayloadParse
+                : ppbox::demux::AsfParse
+            {
+                PayloadParse()
+                    : first_packet(0)
+                {
+                }
+
+                size_t first_packet;
+
+                bool add_payload(
+                    ppbox::avformat::ASF_ParseContext const & context, 
+                    ppbox::avformat::ASF_PayloadHeader const & payload, 
+                    cycle_buffer_t & buffer)
+                {
+                    bool result = ppbox::demux::AsfParse::add_payload(context, payload);
+                    if (payloads().size() == 1) {
+                        data_.clear();
+                    }
+                    data_.insert(data_.end(), buffer.rbegin(payload.PayloadLength), buffer.rend());
+                    buffer.consume(payload.PayloadLength);
+                    return result;
+                }
+
+                void clear(
+                    std::deque<boost::asio::const_buffer> & data)
+                {
+                    data.swap(data_);
+                    data_.clear();
+                    ppbox::demux::AsfParse::clear();
+                }
+
+            private:
+                std::deque<boost::asio::const_buffer> data_;
+            };
+
+        private:
+            util::protocol::MmspDataHeader header_;
+            std::vector<size_t> stream_map_; // Map index to AsfStream
+            std::vector<ppbox::demux::AsfStream> streams_;
+            std::vector<PayloadParse> parses_;
+
+            ppbox::demux::Sample sample_;
+            ppbox::demux::Sample sample2_;
             cycle_buffer_t buf_;
+            ppbox::avformat::ASF_Packet packet_;
+            ppbox::avformat::ASF_PayloadHeader payload_;
+            ppbox::avformat::ASF_ParseContext context_;
+            size_t packet_index_;
+            std::deque<packet_memory> packet_memory_;
         };
 
     } // namespace mux

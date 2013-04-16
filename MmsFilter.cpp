@@ -3,83 +3,96 @@
 #include "ppbox/mmspc/Common.h"
 #include "ppbox/mmspc/MmsFilter.h"
 
-#include <ppbox/avformat/stream/SampleBuffers.h>
+#include <ppbox/demux/base/DemuxError.h>
 using namespace ppbox::demux;
+
+#include <ppbox/avformat/stream/SampleBuffers.h>
 using namespace ppbox::avformat;
 
 #include <util/archive/ArchiveBuffer.h>
 #include <util/protocol/mmsp/MmspData.h>
 using namespace util::protocol;
 
+#include <fstream>
+
 namespace ppbox
 {
     namespace mmspc
     {
 
+        std::ofstream ofs;
+
+        static void save_data(
+            std::deque<boost::asio::const_buffer> data)
+        {
+            data.front() = data.front() + 8;
+            for (size_t i = 0; i < data.size(); ++i) {
+                char const * buf = boost::asio::buffer_cast<char const *>(data[i]);
+                size_t len = boost::asio::buffer_size(data[i]);
+                ofs.write(buf, len);
+            }
+        }
+
         MmsFilter::MmsFilter()
-            : is_save_sample_(false)
+            : packet_index_(0)
         {
             context_.packet = &packet_;
+            ofs.open("xia.asf", std::ios::binary);
         }
 
         MmsFilter::~MmsFilter()
         {
+            ofs.close();
         }
 
         bool MmsFilter::get_sample(
             Sample & sample,
             boost::system::error_code & ec)
         {
-            while (true) {
-                if (!is_save_sample_) {
-                    sample_.data.clear();
-                    if (!Filter::get_sample(sample_, ec)) {
-                        return false;
-                    }
-                    buf_ = cycle_buffer_t(sample_.data);
-                    buf_.commit(sample_.size);
-                    ASFIArchive ia(buf_);
-                    ia.context(&context_);
-                    ia >> header_ >> packet_;
+            while (next_payload(ec)) {
+                if (payload_.StreamNum >= stream_map_.size()) {
+                    ec = error::bad_file_format;
+                    return false;
                 }
-                ASFIArchive ia(buf_);
-                ia.context(&context_);
-                while (packet_.PayloadNum) {
-                    ia >> payload_;
-                    if (--packet_.PayloadNum == 0) {
-                        is_save_sample_ = false;
-                        sample2_.append(sample_);
-                    }
-                    parse_.add_payload(context_, payload_);
-                    if (parse_.is_discontinuity()) {
-                        sample.data.clear();
-                    }
-                    sample2_.data.insert(sample2_.data.end(), buf_.rbegin(payload_.PayloadLength), buf_.rend());
-                    buf_.consume(payload_.PayloadLength);
-                    if (parse_.finish()) {
-                        ec.clear();
+                size_t index = stream_map_[payload_.StreamNum];
+                if (index >= streams_.size()) {
+                    ec = error::bad_file_format;
+                    return false;
+                }
+                PayloadParse & parse(parses_[index]);
+                parse.add_payload(context_, payload_, buf_);
+                if (!parse.finish()) {
+                    continue;
+                }
+                sample.itrack = index;
+                sample.flags = 0;
+                if (parse.is_sync_frame())
+                    sample.flags |= Sample::sync;
+                if (parse.is_discontinuity())
+                    sample.flags |= Sample::discontinuity;
+                sample.dts = parse.dts();
+                sample.cts_delta = boost::uint32_t(-1);
+                sample.duration = 0;
+                sample.size = parse.size();
+                parse.clear(sample.data);
+
+                for (size_t i = parse.first_packet - packet_index_; i < packet_memory_.size(); ++i) {
+                    --packet_memory_[i].first;
+                }
+                size_t packet_index = packet_index_;
+                for (size_t i = 0; i < packet_memory_.size(); ++i) {
+                    if (packet_memory_[i].first == 0) {
+                        ++packet_index_;
+                        sample.append(packet_memory_[i].second);
+                    } else {
                         break;
                     }
                 }
-                if (parse_.finish()) {
-                    break;
-                }
+                packet_memory_.erase(packet_memory_.begin(), packet_memory_.begin() + (packet_index_ - packet_index));
+                parse.first_packet = packet_index_ + packet_memory_.size();
+
+                break;
             }
-
-            sample.itrack = stream_map_[parse_.stream_num()];
-            sample.flags = 0;
-            if (parse_.is_sync_frame())
-                sample.flags |= Sample::sync;
-            if (parse_.is_discontinuity())
-                sample.flags |= Sample::discontinuity;
-            sample.dts = parse_.dts();
-            sample.cts_delta = boost::uint32_t(-1);
-            sample.duration = 0;
-            sample.size = parse_.size();
-            sample.append(sample2_);
-            sample.data.swap(sample2_.data);
-
-            parse_.clear();
 
             return true;
         }
@@ -90,6 +103,7 @@ namespace ppbox
             if (!Filter::get_sample(sample_, ec))
                 return false;
 
+            save_data(sample_.data);
             buf_ = cycle_buffer_t(sample_.data);
             buf_.commit(sample_.size);
             ASFIArchive ia(buf_);
@@ -126,6 +140,7 @@ namespace ppbox
                         ia.seekg(obj_head.ObjLength - 24, std::ios::cur);
                     }
                 }
+                parses_.resize(streams_.size());
                 sample2_.data.clear();
                 return true;
             }
@@ -161,9 +176,51 @@ namespace ppbox
             Sample & sample,
             boost::system::error_code & ec)
         {
-            is_save_sample_ = false;
-            sample.append(sample_);
+            for (size_t i = 0; i < parses_.size(); ++i) {
+                parses_[i].first_packet = 0;
+                std::deque<boost::asio::const_buffer> data;
+                parses_[i].clear(data);
+            }
+            for (size_t i = 0; i < packet_memory_.size(); ++i) {
+                sample.append(packet_memory_[i].second);
+            }
+            packet_memory_.clear();
+            packet_index_ = 0;
+            packet_.PayloadNum = 0;
+
             return Filter::before_seek(sample, ec);
+        }
+
+        bool MmsFilter::next_payload(
+            boost::system::error_code & ec)
+        {
+            if (packet_.PayloadNum == 0) {
+                sample_.data.clear();
+                if (!Filter::get_sample(sample_, ec)) {
+                    return false;
+                }
+                save_data(sample_.data);
+                packet_memory_.push_back(std::make_pair(streams_.size() + 1, sample_.memory));
+                sample_.memory = NULL;
+                buf_ = cycle_buffer_t(sample_.data);
+                buf_.commit(sample_.size);
+                ASFIArchive ia(buf_);
+                ia.context(&context_);
+                ia >> header_ >> packet_;
+            }
+            ASFIArchive ia(buf_);
+            ia.context(&context_);
+            ia >> payload_;
+            if (--packet_.PayloadNum == 0) {
+                --packet_memory_.back().first;
+            }
+            if (ia) {
+                ec.clear();
+                return true;
+            } else {
+                ec = error::bad_file_format;
+                return false;
+            }
         }
 
         void MmsFilter::parse_for_time(
