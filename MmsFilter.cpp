@@ -20,29 +20,14 @@ namespace ppbox
     namespace mmspc
     {
 
-        std::ofstream ofs;
-
-        static void save_data(
-            std::deque<boost::asio::const_buffer> data)
-        {
-            data.front() = data.front() + 8;
-            for (size_t i = 0; i < data.size(); ++i) {
-                char const * buf = boost::asio::buffer_cast<char const *>(data[i]);
-                size_t len = boost::asio::buffer_size(data[i]);
-                ofs.write(buf, len);
-            }
-        }
-
         MmsFilter::MmsFilter()
             : packet_index_(0)
         {
             context_.packet = &packet_;
-            ofs.open("xia.asf", std::ios::binary);
         }
 
         MmsFilter::~MmsFilter()
         {
-            ofs.close();
         }
 
         bool MmsFilter::get_sample(
@@ -103,7 +88,6 @@ namespace ppbox
             if (!Filter::get_sample(sample_, ec))
                 return false;
 
-            save_data(sample_.data);
             buf_ = cycle_buffer_t(sample_.data);
             buf_.commit(sample_.size);
             ASFIArchive ia(buf_);
@@ -113,6 +97,7 @@ namespace ppbox
             sample2_.data.insert(sample2_.data.end(), buf_.rbegin(), buf_.rend());
             sample2_.size += sample_.size - header_.HEAD_SIZE;
             sample_.data.clear();
+            sample2_.append(sample_); // lock memory
 
             if (header_.AFFlags == 0x0C) {
                 buf_ = cycle_buffer_t(sample2_.data);
@@ -142,6 +127,7 @@ namespace ppbox
                 }
                 parses_.resize(streams_.size());
                 sample2_.data.clear();
+                sample_.append(sample2_); // release memory on next get_sample
                 return true;
             }
 
@@ -184,6 +170,8 @@ namespace ppbox
             for (size_t i = 0; i < packet_memory_.size(); ++i) {
                 sample.append(packet_memory_[i].second);
             }
+            sample.append(sample_);
+            sample.append(sample2_);
             packet_memory_.clear();
             packet_index_ = 0;
             packet_.PayloadNum = 0;
@@ -199,7 +187,6 @@ namespace ppbox
                 if (!Filter::get_sample(sample_, ec)) {
                     return false;
                 }
-                save_data(sample_.data);
                 packet_memory_.push_back(std::make_pair(streams_.size() + 1, sample_.memory));
                 sample_.memory = NULL;
                 buf_ = cycle_buffer_t(sample_.data);
