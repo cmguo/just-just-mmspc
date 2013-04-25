@@ -1,11 +1,9 @@
 // MmsDemuxer.h
 
-#ifndef _PPBOX_MMSPC_RTM_DEMUXER_H_
-#define _PPBOX_MMSPC_RTM_DEMUXER_H_
+#ifndef _PPBOX_MMSPC_MMS_DEMUXER_H_
+#define _PPBOX_MMSPC_MMS_DEMUXER_H_
 
 #include "ppbox/demux/packet/PacketDemuxer.h"
-
-#include <ppbox/avformat/flv/FlvMetaData.h>
 
 namespace ppbox
 {
@@ -29,7 +27,6 @@ namespace ppbox
                 boost::system::error_code & ec);
 
         private:
-            ppbox::avformat::FlvMetaData meta_;
             MmsFilter * filter_;
         };
 
@@ -38,4 +35,4 @@ namespace ppbox
     } // namespace mmspc
 } // namespace ppbox
 
-#endif // _PPBOX_MMSPC_RTM_DEMUXER_H_
+#endif // _PPBOX_MMSPC_MMS_DEMUXER_H_

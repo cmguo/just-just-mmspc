@@ -62,7 +62,7 @@ namespace ppbox
 
         PPBOX_REGISTER_MEDIA_BY_PROTOCOL("mms", MmspMedia);
 
-    } // data
+    } // mmspc
 } // ppbox
 
 #endif // _PPBOX_MMSPC_MMSP_MEDIA_H_

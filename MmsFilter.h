@@ -1,7 +1,7 @@
 // MmsFilter.h
 
-#ifndef _PPBOX_MMSPC_RTM_FILTER_H_
-#define _PPBOX_MMSPC_RTM_FILTER_H_
+#ifndef _PPBOX_MMSPC_MMS_FILTER_H_
+#define _PPBOX_MMSPC_MMS_FILTER_H_
 
 #include <ppbox/demux/packet/Filter.h>
 #include <ppbox/demux/basic/asf/AsfParse.h>
@@ -119,7 +119,7 @@ namespace ppbox
             std::deque<packet_memory> packet_memory_;
         };
 
-    } // namespace mux
+    } // namespace mmspc
 } // namespace ppbox
 
-#endif // _PPBOX_MMSPC_RTM_FILTER_H_
+#endif // _PPBOX_MMSPC_MMS_FILTER_H_

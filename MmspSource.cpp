@@ -1,3 +1,5 @@
+// MmspSource.cpp
+
 #include "ppbox/mmspc/Common.h"
 #include "ppbox/mmspc/MmspSource.h"
 
@@ -23,8 +25,7 @@ namespace ppbox
             boost::asio::io_service & io_svc)
             : ppbox::data::UrlSource(io_svc)
             , client_(io_svc)
-            , open_step_(0)
-        {
+            , open_step_(0){
         }
 
         MmspSource::~MmspSource()
@@ -213,5 +214,5 @@ namespace ppbox
             return false;
         }
 
-    } // namespace data
+    } // namespace mmspc
 } // namespace ppbox

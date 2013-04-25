@@ -8,9 +8,6 @@ namespace ppbox
     namespace mmspc
     {
 
-        class MmspSession;
-        class MmspDispatcher;
-
         class MmspcModule 
             : public ppbox::common::CommonModuleBase<MmspcModule>
         {

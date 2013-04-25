@@ -99,7 +99,7 @@ namespace ppbox
 
         PPBOX_REGISTER_URL_SOURCE("mmsp", MmspSource);
 
-    } // namespace data
+    } // namespace mmspc
 } // namespace ppbox
 
 #endif // _PPBOX_MMSPC_MMSP_SOURCE_H_
