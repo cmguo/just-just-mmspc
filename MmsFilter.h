@@ -78,8 +78,8 @@ namespace ppbox
                 size_t first_packet;
 
                 bool add_payload(
-                    ppbox::avformat::ASF_ParseContext const & context, 
-                    ppbox::avformat::ASF_PayloadHeader const & payload, 
+                    ppbox::avformat::AsfParseContext const & context, 
+                    ppbox::avformat::AsfPayloadHeader const & payload, 
                     cycle_buffer_t & buffer)
                 {
                     bool result = ppbox::demux::AsfParse::add_payload(context, payload);
@@ -112,9 +112,9 @@ namespace ppbox
             ppbox::demux::Sample sample_;
             ppbox::demux::Sample sample2_;
             cycle_buffer_t buf_;
-            ppbox::avformat::ASF_Packet packet_;
-            ppbox::avformat::ASF_PayloadHeader payload_;
-            ppbox::avformat::ASF_ParseContext context_;
+            ppbox::avformat::AsfPacket packet_;
+            ppbox::avformat::AsfPayloadHeader payload_;
+            ppbox::avformat::AsfParseContext context_;
             size_t packet_index_;
             std::deque<packet_memory> packet_memory_;
         };

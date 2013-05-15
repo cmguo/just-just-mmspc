@@ -6,8 +6,10 @@
 #include <ppbox/demux/base/DemuxError.h>
 using namespace ppbox::demux;
 
-#include <ppbox/avformat/stream/SampleBuffers.h>
 using namespace ppbox::avformat;
+
+#include <ppbox/avbase/stream/SampleBuffers.h>
+using namespace ppbox::avbase;
 
 #include <util/archive/ArchiveBuffer.h>
 #include <util/protocol/mmsp/MmspData.h>
@@ -88,7 +90,7 @@ namespace ppbox
 
             buf_ = cycle_buffer_t(sample_.data);
             buf_.commit(sample_.size);
-            ASFIArchive ia(buf_);
+            AsfIArchive ia(buf_);
             ia.context(&context_);
             ia >> header_;
 
@@ -100,17 +102,17 @@ namespace ppbox
             if (header_.AFFlags == 0x0C) {
                 buf_ = cycle_buffer_t(sample2_.data);
                 buf_.commit(sample2_.size);
-                ASFIArchive ia(buf_);
-                ppbox::avformat::ASF_Header_Object header;
-                ASF_Object_Header obj_head;
+                AsfIArchive ia(buf_);
+                ppbox::avformat::AsfHeaderObject header;
+                AsfObjectHeader obj_head;
                 ia >> header;
                 while (ia >> obj_head) {
                     if (obj_head.ObjectId == ASF_FILE_PROPERTIES_OBJECT) {
-                        ppbox::avformat::ASF_File_Properties_Object_Data file;
+                        ppbox::avformat::AsfFilePropertiesObjectData file;
                         ia >> file;
                         context_.max_packet_size = file.MaximumDataPacketSize;
                     } else if (obj_head.ObjectId == ASF_STREAM_PROPERTIES_OBJECT) {
-                        ASF_Stream_Properties_Object_Data obj_data;
+                        AsfStreamPropertiesObjectData obj_data;
                         ia >> obj_data;
                         size_t index = streams_.size();
                         if ((size_t)obj_data.Flag.StreamNumber + 1 > stream_map_.size()) {
@@ -189,11 +191,11 @@ namespace ppbox
                 sample_.memory = NULL;
                 buf_ = cycle_buffer_t(sample_.data);
                 buf_.commit(sample_.size);
-                ASFIArchive ia(buf_);
+                AsfIArchive ia(buf_);
                 ia.context(&context_);
                 ia >> header_ >> packet_;
             }
-            ASFIArchive ia(buf_);
+            AsfIArchive ia(buf_);
             ia.context(&context_);
             ia >> payload_;
             if (--packet_.PayloadNum == 0) {
@@ -213,13 +215,13 @@ namespace ppbox
             boost::system::error_code & ec)
         {
             MmspDataHeader header;
-            ASF_Packet packet;
-            ASF_PayloadHeader payload;
-            ASF_ParseContext context(context_);
+            AsfPacket packet;
+            AsfPayloadHeader payload;
+            AsfParseContext context(context_);
             context.packet = &packet;
             cycle_buffer_t buf(sample.data);
             buf.commit(sample.size);
-            ASFIArchive ia(buf);
+            AsfIArchive ia(buf);
             ia.context(&context);
             ia >> header >> packet >> payload;
             sample.dts = payload.PresTime;
