@@ -7,6 +7,7 @@
 using namespace ppbox::demux;
 
 using namespace ppbox::avformat;
+using namespace ppbox::avformat::error;
 
 #include <ppbox/avbase/stream/SampleBuffers.h>
 using namespace ppbox::avbase;
@@ -36,12 +37,12 @@ namespace ppbox
         {
             while (next_payload(ec)) {
                 if (payload_.StreamNum >= stream_map_.size()) {
-                    ec = error::bad_file_format;
+                    ec = bad_media_format;
                     return false;
                 }
                 size_t index = stream_map_[payload_.StreamNum];
                 if (index >= streams_.size()) {
-                    ec = error::bad_file_format;
+                    ec = bad_media_format;
                     return false;
                 }
                 PayloadParse & parse(parses_[index]);
@@ -205,7 +206,7 @@ namespace ppbox
                 ec.clear();
                 return true;
             } else {
-                ec = error::bad_file_format;
+                ec = bad_media_format;
                 return false;
             }
         }
