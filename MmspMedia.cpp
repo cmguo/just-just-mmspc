@@ -93,7 +93,7 @@ namespace ppbox
             return true;
         }
 
-        ppbox::data::SourceBase & MmspMedia::source()
+        util::stream::Source & MmspMedia::source()
         {
             return source_;
         }

@@ -23,7 +23,7 @@ namespace ppbox
 
         MmspSource::MmspSource(
             boost::asio::io_service & io_svc)
-            : ppbox::data::UrlSource(io_svc)
+            : util::stream::UrlSource(io_svc)
             , client_(io_svc)
             , open_step_(0){
         }
@@ -32,7 +32,7 @@ namespace ppbox
         {
         }
 
-        boost::system::error_code MmspSource::open(
+        bool MmspSource::open(
             framework::string::Url const & url, 
             boost::uint64_t beg, 
             boost::uint64_t end, 
@@ -41,7 +41,7 @@ namespace ppbox
             url_ = url;
             open_step_ = 1;
             is_open(ec);
-            return ec;
+            return !ec;
         }
 
         void MmspSource::async_open(
@@ -120,16 +120,16 @@ namespace ppbox
             return !ec;
         }
 
-        boost::system::error_code MmspSource::close(
+        bool MmspSource::close(
             boost::system::error_code & ec)
         {
-            return client_.close(ec);
+            return !client_.close(ec);
         }
 
-        boost::system::error_code MmspSource::cancel(
+        bool MmspSource::cancel(
             boost::system::error_code & ec)
         {
-            return client_.cancel_forever(ec);
+            return !client_.cancel_forever(ec);
         }
 
         size_t MmspSource::private_read_some(
@@ -189,18 +189,18 @@ namespace ppbox
             handler(ec, bytes_transferred);
         }
 
-        boost::system::error_code MmspSource::set_non_block(
+        bool MmspSource::set_non_block(
             bool non_block, 
             boost::system::error_code & ec)
         {
-            return client_.set_non_block(non_block, ec);
+            return !client_.set_non_block(non_block, ec);
         }
 
-        boost::system::error_code MmspSource::set_time_out(
+        bool MmspSource::set_time_out(
             boost::uint32_t time_out, 
             boost::system::error_code & ec)
         {
-            return client_.set_time_out(time_out, ec);
+            return !client_.set_time_out(time_out, ec);
         }
 
         bool MmspSource::continuable(
