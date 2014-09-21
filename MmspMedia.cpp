@@ -25,7 +25,7 @@ namespace ppbox
             boost::system::error_code ec;
             PacketMedia::get_basic_info(info_, ec);
             info_.type = info_.live;
-            info_.format = "mms";
+            info_.format_type = "mms";
         }
 
         MmspMedia::~MmspMedia()
