@@ -1,22 +1,22 @@
 // MmsFilter.cpp
 
-#include "ppbox/mmspc/Common.h"
-#include "ppbox/mmspc/MmsFilter.h"
+#include "just/mmspc/Common.h"
+#include "just/mmspc/MmsFilter.h"
 
-#include <ppbox/demux/base/DemuxError.h>
-using namespace ppbox::demux;
+#include <just/demux/base/DemuxError.h>
+using namespace just::demux;
 
-using namespace ppbox::avformat;
-using namespace ppbox::avformat::error;
+using namespace just::avformat;
+using namespace just::avformat::error;
 
-#include <ppbox/avbase/stream/SampleBuffers.h>
-using namespace ppbox::avbase;
+#include <just/avbase/stream/SampleBuffers.h>
+using namespace just::avbase;
 
 #include <util/archive/ArchiveBuffer.h>
 #include <util/protocol/mmsp/MmspData.h>
 using namespace util::protocol;
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
@@ -104,12 +104,12 @@ namespace ppbox
                 buf_ = cycle_buffer_t(sample2_.data);
                 buf_.commit(sample2_.size);
                 AsfIArchive ia(buf_);
-                ppbox::avformat::AsfHeaderObject header;
+                just::avformat::AsfHeaderObject header;
                 AsfObjectHeader obj_head;
                 ia >> header;
                 while (ia >> obj_head) {
                     if (obj_head.ObjectId == ASF_FILE_PROPERTIES_OBJECT) {
-                        ppbox::avformat::AsfFilePropertiesObjectData file;
+                        just::avformat::AsfFilePropertiesObjectData file;
                         ia >> file;
                         context_.max_packet_size = file.MaximumDataPacketSize;
                     } else if (obj_head.ObjectId == ASF_STREAM_PROPERTIES_OBJECT) {
@@ -229,4 +229,4 @@ namespace ppbox
         }
 
     } // namespace mmspc
-} // namespace ppbox
+} // namespace just

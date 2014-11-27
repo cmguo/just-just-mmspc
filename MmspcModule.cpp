@@ -1,17 +1,17 @@
 // MmspcModule.cpp
 
-#include "ppbox/mmspc/Common.h"
-#include "ppbox/mmspc/MmspcModule.h"
-#include "ppbox/mmspc/ClassRegister.h"
+#include "just/mmspc/Common.h"
+#include "just/mmspc/MmspcModule.h"
+#include "just/mmspc/ClassRegister.h"
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
 
         MmspcModule::MmspcModule(
             util::daemon::Daemon & daemon)
-            : ppbox::common::CommonModuleBase<MmspcModule>(daemon, "MmspcModule")
+            : just::common::CommonModuleBase<MmspcModule>(daemon, "MmspcModule")
         {
         }
 
@@ -30,4 +30,4 @@ namespace ppbox
         }
 
     } // namespace mmspc
-} // namespace ppbox
+} // namespace just

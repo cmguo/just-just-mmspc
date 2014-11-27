@@ -1,12 +1,12 @@
 // MmspSource.h
 
-#ifndef _PPBOX_MMSPC_MMSP_SOURCE_H_
-#define _PPBOX_MMSPC_MMSP_SOURCE_H_
+#ifndef _JUST_MMSPC_MMSP_SOURCE_H_
+#define _JUST_MMSPC_MMSP_SOURCE_H_
 
 #include <util/stream/UrlSource.h>
 #include <util/protocol/mmsp/MmspClient.h>
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
@@ -99,6 +99,6 @@ namespace ppbox
         UTIL_REGISTER_URL_SOURCE("mmsp", MmspSource);
 
     } // namespace mmspc
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_MMSPC_MMSP_SOURCE_H_
+#endif // _JUST_MMSPC_MMSP_SOURCE_H_

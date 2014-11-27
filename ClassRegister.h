@@ -1,12 +1,12 @@
 // ClassRegister.h
 
-#ifndef _PPBOX_MMSPC_CLASS_REGISTER_H_
-#define _PPBOX_MMSPC_CLASS_REGISTER_H_
+#ifndef _JUST_MMSPC_CLASS_REGISTER_H_
+#define _JUST_MMSPC_CLASS_REGISTER_H_
 
 #include <util/tools/ClassRegister.h>
 
-#include "ppbox/mmspc/MmspSource.h"
-#include "ppbox/mmspc/MmspMedia.h"
-#include "ppbox/mmspc/MmsDemuxer.h"
+#include "just/mmspc/MmspSource.h"
+#include "just/mmspc/MmspMedia.h"
+#include "just/mmspc/MmsDemuxer.h"
 
-#endif //_PPBOX_MMSPC_CLASS_REGISTER_H_
+#endif //_JUST_MMSPC_CLASS_REGISTER_H_

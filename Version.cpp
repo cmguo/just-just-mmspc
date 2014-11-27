@@ -1,5 +1,5 @@
 // Version.cpp
 
-#include "ppbox/mmspc/Common.h"
+#include "just/mmspc/Common.h"
 #define VERSION_SOURCE
-#include "ppbox/mmspc/Version.h"
+#include "just/mmspc/Version.h"

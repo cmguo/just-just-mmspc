@@ -1,15 +1,15 @@
 // MmspcModule.h
 
-#ifndef _PPBOX_MMSPC_MMSPC_MODULE_H_
-#define _PPBOX_MMSPC_MMSPC_MODULE_H_
+#ifndef _JUST_MMSPC_MMSPC_MODULE_H_
+#define _JUST_MMSPC_MMSPC_MODULE_H_
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
 
         class MmspcModule 
-            : public ppbox::common::CommonModuleBase<MmspcModule>
+            : public just::common::CommonModuleBase<MmspcModule>
         {
         public:
             MmspcModule(
@@ -24,6 +24,6 @@ namespace ppbox
         };
 
     } // namespace mmspc
-} // namespace ppbox
+} // namespace just
 
-#endif // _PPBOX_MMSPC_MMSPC_MODULE_H_
+#endif // _JUST_MMSPC_MMSPC_MODULE_H_

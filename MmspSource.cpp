@@ -1,7 +1,7 @@
 // MmspSource.cpp
 
-#include "ppbox/mmspc/Common.h"
-#include "ppbox/mmspc/MmspSource.h"
+#include "just/mmspc/Common.h"
+#include "just/mmspc/MmspSource.h"
 
 #include <util/protocol/mmsp/MmspError.h>
 #include <util/protocol/mmsp/MmspSocket.hpp>
@@ -14,12 +14,12 @@ using namespace util::protocol;
 #include <framework/logger/StreamRecord.h>
 #include <framework/logger/StringRecord.h>
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
 
-        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.mmspc.MmspSource", framework::logger::Debug);
+        FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.mmspc.MmspSource", framework::logger::Debug);
 
         MmspSource::MmspSource(
             boost::asio::io_service & io_svc)
@@ -215,4 +215,4 @@ namespace ppbox
         }
 
     } // namespace mmspc
-} // namespace ppbox
+} // namespace just

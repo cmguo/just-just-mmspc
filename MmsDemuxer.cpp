@@ -1,27 +1,27 @@
 // MmsDemuxer.cpp
 
-#include "ppbox/mmspc/Common.h"
-#include "ppbox/mmspc/MmsDemuxer.h"
-#include "ppbox/mmspc/MmsFilter.h"
+#include "just/mmspc/Common.h"
+#include "just/mmspc/MmsDemuxer.h"
+#include "just/mmspc/MmsFilter.h"
 
-using namespace ppbox::demux;
+using namespace just::demux;
 
 #include <util/buffers/BuffersCopy.h>
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.mmspc.MmsDemuxer", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.mmspc.MmsDemuxer", framework::logger::Debug);
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
 
         MmsDemuxer::MmsDemuxer(
             boost::asio::io_service & io_svc, 
-            ppbox::data::PacketMedia & media)
-            : ppbox::demux::PacketDemuxer(io_svc, media)
+            just::data::PacketMedia & media)
+            : just::demux::PacketDemuxer(io_svc, media)
             , filter_(NULL)
         {
         }
@@ -50,4 +50,4 @@ namespace ppbox
         }
 
     } // namespace mmspc
-} // namespace ppbox
+} // namespace just

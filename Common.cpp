@@ -1,3 +1,3 @@
 // Common.cpp
 
-#include "ppbox/mmspc/Common.h"
+#include "just/mmspc/Common.h"

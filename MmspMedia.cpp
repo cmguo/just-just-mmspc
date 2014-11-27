@@ -1,7 +1,7 @@
 // MmspMedia.cpp
 
-#include "ppbox/mmspc/Common.h"
-#include "ppbox/mmspc/MmspMedia.h"
+#include "just/mmspc/Common.h"
+#include "just/mmspc/MmspMedia.h"
 
 #include <framework/logger/Logger.h>
 #include <framework/logger/StreamRecord.h>
@@ -9,9 +9,9 @@
 
 #include <boost/bind.hpp>
 
-FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("ppbox.mmspc.MmspMedia", framework::logger::Debug);
+FRAMEWORK_LOGGER_DECLARE_MODULE_LEVEL("just.mmspc.MmspMedia", framework::logger::Debug);
 
-namespace ppbox
+namespace just
 {
     namespace mmspc
     {
@@ -44,7 +44,7 @@ namespace ppbox
             MediaBase::response_type const & resp)
         {
             if (!ec && source_.is_record()) {
-                ((ppbox::data::MediaInfo &)info_).type = info_.vod;
+                ((just::data::MediaInfo &)info_).type = info_.vod;
                 info_.flags |= info_.f_seekable;
                 info_.flags |= info_.f_pauseable;
             }
@@ -64,7 +64,7 @@ namespace ppbox
         }
 
         bool MmspMedia::get_basic_info(
-            ppbox::data::MediaBasicInfo & info,
+            just::data::MediaBasicInfo & info,
             boost::system::error_code & ec) const
         {
             info = info_;
@@ -73,7 +73,7 @@ namespace ppbox
         }
 
         bool MmspMedia::get_info(
-            ppbox::data::MediaInfo & info,
+            just::data::MediaInfo & info,
             boost::system::error_code & ec) const
         {
             info = info_;
@@ -82,7 +82,7 @@ namespace ppbox
         }
 
         bool MmspMedia::get_packet_feature(
-            ppbox::data::PacketFeature & feature,
+            just::data::PacketFeature & feature,
             boost::system::error_code & ec) const
         {
             feature.piece_size = 1024;
@@ -100,4 +100,4 @@ namespace ppbox
 
 
     } // mmspc
-} // ppbox
+} // just

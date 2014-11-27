@@ -1,13 +1,13 @@
 // Define.h
 
-#ifndef _PPBOX_MMSPC_DEFINE_H_
-#define _PPBOX_MMSPC_DEFINE_H_
+#ifndef _JUST_MMSPC_DEFINE_H_
+#define _JUST_MMSPC_DEFINE_H_
 
-#include "ppbox/common/VersionDefine.h" // for VERSION
+#include "just/common/VersionDefine.h" // for VERSION
 
-#define NAME ppbox_mmspd
+#define NAME just_mmspd
 
-#define BEGIN_NAME_SPACE namespace ppbox { namespace mmspc {
+#define BEGIN_NAME_SPACE namespace just { namespace mmspc {
 
 #define END_NAME_SPACE }}
 
