@@ -19,14 +19,16 @@ namespace just
         {
         }
 
-        boost::system::error_code MmspcModule::startup()
+        bool MmspcModule::startup(
+           boost::system::error_code & ec)
         {
-            boost::system::error_code ec;
-            return ec;
+            return true;
         }
 
-        void MmspcModule::shutdown()
+        bool MmspcModule::shutdown(
+           boost::system::error_code & ec)
         {
+            return true;
         }
 
     } // namespace mmspc
